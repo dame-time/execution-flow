@@ -1,9 +1,33 @@
 name: Reusable Workflow
-on: workflow_call
+on: 
+  workflow_call:
+    inputs:
+      artifact-name:
+        required: true
+        description: The name of the artifact to download
+        default: dist
+        type: string
+    outputs:
+      result:
+        description: The result of the workflow
+        type: string
+    secrets:
+      some_secret:
+        required: false
+        description: A secret to use in the workflow
 
 jobs:
   deploy:
+    outputs: 
+      outcome: ${{ steps.set-output.outputs.step-result }}
     runs-on: ubuntu-latest
     steps:
+      - name: Get code
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.artifact-name }}
       - name: Output informations
         run: echo "Deploying & updating the application..."
+      - name: Set output
+        id: set-output
+        run: echo "step-result=Deployment successful" >> $GITHUB_OUTPUT
