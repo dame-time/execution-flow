@@ -39,6 +39,7 @@ jobs:
         id: run-tests
         run: npm run test
       - name: Upload test report
+        if: always() && steps.run-tests.conclusion == 'failure' # Check if the test job would have failed and if so then upload the test report
         uses: actions/upload-artifact@v3
         with:
           name: test-report
